@@ -3,8 +3,11 @@
   <arg name="map_size_y_"/>
   <arg name="map_size_z_"/>
 
+  <!-- 里程计话题 visual_slam/odom -->
   <arg name="odometry_topic"/>
+  <!-- 相机到全局tf -->
   <arg name="camera_pose_topic"/>
+  <!-- 深度信息 pcl_render_node/depth 激光雷达点云话题cloud_topic =pcl_render_node/cloud-->
   <arg name="depth_topic"/>
   <arg name="cloud_topic"/>
 
@@ -13,8 +16,10 @@
   <arg name="fx"/>
   <arg name="fy"/>
 
+
   <arg name="max_vel"/>
   <arg name="max_acc"/>
+  <!--局部规划范围 7.5 （1.5倍传感器距离）-->
   <arg name="planning_horizon"/>
 
   <arg name="point_num"/>
@@ -34,7 +39,9 @@
   <arg name="point4_y"/>
   <arg name="point4_z"/>
 
+  <!--飞行模式flight_type= 1-rviz中设置的2D目标 2-使用给定的全局路标点-->
   <arg name="flight_type"/>
+  <!-- 是否使用特定的轨迹 use_distinctive_trajs =true -->
   <arg name="use_distinctive_trajs"/>
 
   <arg name="obj_num_set"/>

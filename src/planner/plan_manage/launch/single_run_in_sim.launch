@@ -1,6 +1,6 @@
 <launch>
     <!-- number of moving objects -->
-    <arg name="obj_num" value="10" />
+    <arg name="obj_num" value="1" />
     <arg name="drone_id" value="0"/>
 
     <arg name="map_size_x" value="50.0"/>
@@ -8,7 +8,7 @@
     <arg name="map_size_z" value=" 2.0"/>
     <arg name="odom_topic" value="visual_slam/odom" />
     
-    <!-- map -->
+    <!-- map 地图生成 random_forest -->
     <node pkg ="map_generator" name ="random_forest" type ="random_forest" output = "screen">
         <param name="map/x_size" value="26" />
         <param name="map/y_size" value="20" />
@@ -30,7 +30,7 @@
         <param name="min_distance" value="0.8"/>
     </node>
 
-    <!-- main algorithm params -->
+    <!-- main algorithm params|  ego_planner_node -->
     <include file="$(find ego_planner)/launch/advanced_param.xml">
         <arg name="drone_id" value="$(arg drone_id)"/>
         <arg name="map_size_x_" value="$(arg map_size_x)"/>
@@ -79,13 +79,14 @@
         <arg name="point4_y" value="0.0" />
         <arg name="point4_z" value="1.0" />
     </include>
-    <!-- trajectory server -->
+    <!-- trajectory server 路径规划-->
     <node pkg="ego_planner" name="drone_$(arg drone_id)_traj_server" type="traj_server" output="screen">
         <remap from="position_cmd" to="drone_$(arg drone_id)_planning/pos_cmd"/>
         <remap from="~planning/bspline" to="drone_$(arg drone_id)_planning/bspline"/>
         <param name="traj_server/time_forward" value="1.0" type="double"/>
     </node>
-    <!-- use simulator -->
+
+    <!-- use simulator | 包含 poscmd_2_odom、odom_visualization、pcl_render_node  -->
     <include file="$(find ego_planner)/launch/simulator.xml">
         <arg name="drone_id" value="$(arg drone_id)"/>
         <arg name="map_size_x_" value="$(arg map_size_x)"/>

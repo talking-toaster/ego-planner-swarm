@@ -12,13 +12,13 @@
 
   <arg name="drone_id"/>
 
-  <!-- topic of your odometry such as VIO or LIO -->
+  <!-- topic of your odometry such as VIO or LIO 里程计-->
   <arg name="odom_topic"/>
 
-  <!-- number of moving objects -->
+  <!-- number of moving objects 无人机数量 -->
   <arg name="obj_num" value="10" />
 
-  <!-- main algorithm params -->
+  <!-- main algorithm params 包含 advanced_param.xml-->
   <include file="$(find ego_planner)/launch/advanced_param.xml">
 
     <arg name="drone_id" value="$(arg drone_id)"/>
@@ -85,7 +85,7 @@
     
   </include>
 
-  <!-- trajectory server -->
+  <!-- trajectory server 核心 路径规划 注意两个remap -->
   <node pkg="ego_planner" name="drone_$(arg drone_id)_traj_server" type="traj_server" output="screen">
     <remap from="position_cmd" to="drone_$(arg drone_id)_planning/pos_cmd"/>
     <remap from="~planning/bspline" to="drone_$(arg drone_id)_planning/bspline"/>
@@ -100,7 +100,7 @@
     <param name="waypoint_type" value="manual-lonely-waypoint"/>    
   </node-->
 
-  <!-- use simulator -->
+  <!-- use simulator  包含 simulator.xml-->
   <include file="$(find ego_planner)/launch/simulator.xml">
 
     <arg name="drone_id" value="$(arg drone_id)"/>

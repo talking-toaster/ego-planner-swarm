@@ -11,6 +11,7 @@ namespace ego_planner
 {
   // An implementation of non-uniform B-spline with different dimensions
   // It also represents uniform B-spline which is a special case of non-uniform
+  // 不同维度的非均匀b样条的实现,包括均匀B样条
   class UniformBspline
   {
   private:

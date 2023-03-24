@@ -23,7 +23,7 @@ int traj_id_;
 // yaw control
 double last_yaw_, last_yaw_dot_;
 double time_forward_;
-
+//B样条callback，优化曲线
 void bsplineCallback(traj_utils::BsplineConstPtr msg)
 {
   // parse pos traj
@@ -43,7 +43,7 @@ void bsplineCallback(traj_utils::BsplineConstPtr msg)
     pos_pts(2, i) = msg->pos_pts[i].z;
   }
 
-  UniformBspline pos_traj(pos_pts, msg->order, 0.1);
+  UniformBspline pos_traj(pos_pts, msg->order, 0.1);//点集、阶数、时间间隔
   pos_traj.setKnot(knots);
 
   // parse yaw traj
