@@ -23,27 +23,24 @@ int traj_id_;
 // yaw control
 double last_yaw_, last_yaw_dot_;
 double time_forward_;
-//B样条callback，优化曲线
-void bsplineCallback(traj_utils::BsplineConstPtr msg)
-{
+// B样条callback，优化曲线
+void bsplineCallback(traj_utils::BsplineConstPtr msg) {
   // parse pos traj
 
   Eigen::MatrixXd pos_pts(3, msg->pos_pts.size());
 
   Eigen::VectorXd knots(msg->knots.size());
-  for (size_t i = 0; i < msg->knots.size(); ++i)
-  {
+  for (size_t i = 0; i < msg->knots.size(); ++i) {
     knots(i) = msg->knots[i];
   }
 
-  for (size_t i = 0; i < msg->pos_pts.size(); ++i)
-  {
+  for (size_t i = 0; i < msg->pos_pts.size(); ++i) {
     pos_pts(0, i) = msg->pos_pts[i].x;
     pos_pts(1, i) = msg->pos_pts[i].y;
     pos_pts(2, i) = msg->pos_pts[i].z;
   }
 
-  UniformBspline pos_traj(pos_pts, msg->order, 0.1);//点集、阶数、时间间隔
+  UniformBspline pos_traj(pos_pts, msg->order, 0.1);  // 点集、阶数、时间间隔
   pos_traj.setKnot(knots);
 
   // parse yaw traj
@@ -53,7 +50,7 @@ void bsplineCallback(traj_utils::BsplineConstPtr msg)
   //   yaw_pts(i, 0) = msg->yaw_pts[i];
   // }
 
-  //UniformBspline yaw_traj(yaw_pts, msg->order, msg->yaw_dt);
+  // UniformBspline yaw_traj(yaw_pts, msg->order, msg->yaw_dt);
 
   start_time_ = msg->start_time;
   traj_id_ = msg->traj_id;
@@ -68,8 +65,9 @@ void bsplineCallback(traj_utils::BsplineConstPtr msg)
   receive_traj_ = true;
 }
 
-std::pair<double, double> calculate_yaw(double t_cur, Eigen::Vector3d &pos, ros::Time &time_now, ros::Time &time_last)
-{
+std::pair<double, double> calculate_yaw(double t_cur, Eigen::Vector3d &pos,
+                                        ros::Time &time_now,
+                                        ros::Time &time_last) {
   constexpr double PI = 3.1415926;
   constexpr double YAW_DOT_MAX_PER_SEC = PI;
   // constexpr double YAW_DOT_DOT_MAX_PER_SEC = PI;
@@ -77,67 +75,50 @@ std::pair<double, double> calculate_yaw(double t_cur, Eigen::Vector3d &pos, ros:
   double yaw = 0;
   double yawdot = 0;
 
-  Eigen::Vector3d dir = t_cur + time_forward_ <= traj_duration_ ? traj_[0].evaluateDeBoorT(t_cur + time_forward_) - pos : traj_[0].evaluateDeBoorT(traj_duration_) - pos;
+  Eigen::Vector3d dir =
+      t_cur + time_forward_ <= traj_duration_
+          ? traj_[0].evaluateDeBoorT(t_cur + time_forward_) - pos
+          : traj_[0].evaluateDeBoorT(traj_duration_) - pos;
   double yaw_temp = dir.norm() > 0.1 ? atan2(dir(1), dir(0)) : last_yaw_;
   double max_yaw_change = YAW_DOT_MAX_PER_SEC * (time_now - time_last).toSec();
-  if (yaw_temp - last_yaw_ > PI)
-  {
-    if (yaw_temp - last_yaw_ - 2 * PI < -max_yaw_change)
-    {
+  if (yaw_temp - last_yaw_ > PI) {
+    if (yaw_temp - last_yaw_ - 2 * PI < -max_yaw_change) {
       yaw = last_yaw_ - max_yaw_change;
-      if (yaw < -PI)
-        yaw += 2 * PI;
+      if (yaw < -PI) yaw += 2 * PI;
 
       yawdot = -YAW_DOT_MAX_PER_SEC;
-    }
-    else
-    {
+    } else {
       yaw = yaw_temp;
       if (yaw - last_yaw_ > PI)
         yawdot = -YAW_DOT_MAX_PER_SEC;
       else
         yawdot = (yaw_temp - last_yaw_) / (time_now - time_last).toSec();
     }
-  }
-  else if (yaw_temp - last_yaw_ < -PI)
-  {
-    if (yaw_temp - last_yaw_ + 2 * PI > max_yaw_change)
-    {
+  } else if (yaw_temp - last_yaw_ < -PI) {
+    if (yaw_temp - last_yaw_ + 2 * PI > max_yaw_change) {
       yaw = last_yaw_ + max_yaw_change;
-      if (yaw > PI)
-        yaw -= 2 * PI;
+      if (yaw > PI) yaw -= 2 * PI;
 
       yawdot = YAW_DOT_MAX_PER_SEC;
-    }
-    else
-    {
+    } else {
       yaw = yaw_temp;
       if (yaw - last_yaw_ < -PI)
         yawdot = YAW_DOT_MAX_PER_SEC;
       else
         yawdot = (yaw_temp - last_yaw_) / (time_now - time_last).toSec();
     }
-  }
-  else
-  {
-    if (yaw_temp - last_yaw_ < -max_yaw_change)
-    {
+  } else {
+    if (yaw_temp - last_yaw_ < -max_yaw_change) {
       yaw = last_yaw_ - max_yaw_change;
-      if (yaw < -PI)
-        yaw += 2 * PI;
+      if (yaw < -PI) yaw += 2 * PI;
 
       yawdot = -YAW_DOT_MAX_PER_SEC;
-    }
-    else if (yaw_temp - last_yaw_ > max_yaw_change)
-    {
+    } else if (yaw_temp - last_yaw_ > max_yaw_change) {
       yaw = last_yaw_ + max_yaw_change;
-      if (yaw > PI)
-        yaw -= 2 * PI;
+      if (yaw > PI) yaw -= 2 * PI;
 
       yawdot = YAW_DOT_MAX_PER_SEC;
-    }
-    else
-    {
+    } else {
       yaw = yaw_temp;
       if (yaw - last_yaw_ > PI)
         yawdot = -YAW_DOT_MAX_PER_SEC;
@@ -149,7 +130,7 @@ std::pair<double, double> calculate_yaw(double t_cur, Eigen::Vector3d &pos, ros:
   }
 
   if (fabs(yaw - last_yaw_) <= max_yaw_change)
-    yaw = 0.5 * last_yaw_ + 0.5 * yaw; // nieve LPF
+    yaw = 0.5 * last_yaw_ + 0.5 * yaw;  // nieve LPF
   yawdot = 0.5 * last_yaw_dot_ + 0.5 * yawdot;
   last_yaw_ = yaw;
   last_yaw_dot_ = yawdot;
@@ -160,21 +141,21 @@ std::pair<double, double> calculate_yaw(double t_cur, Eigen::Vector3d &pos, ros:
   return yaw_yawdot;
 }
 
-void cmdCallback(const ros::TimerEvent &e)
-{
+// 100Hz 发布pos_cmd
+void cmdCallback(const ros::TimerEvent &e) {
   /* no publishing before receive traj_ */
-  if (!receive_traj_)
-    return;
+  if (!receive_traj_) return;
 
   ros::Time time_now = ros::Time::now();
   double t_cur = (time_now - start_time_).toSec();
 
-  Eigen::Vector3d pos(Eigen::Vector3d::Zero()), vel(Eigen::Vector3d::Zero()), acc(Eigen::Vector3d::Zero()), pos_f;
+  Eigen::Vector3d pos(Eigen::Vector3d::Zero()), vel(Eigen::Vector3d::Zero()),
+      acc(Eigen::Vector3d::Zero()), pos_f;
   std::pair<double, double> yaw_yawdot(0, 0);
 
   static ros::Time time_last = ros::Time::now();
-  if (t_cur < traj_duration_ && t_cur >= 0.0)
-  {
+  if (t_cur < traj_duration_ && t_cur >= 0.0) {
+    // 在规划的轨迹时间内
     pos = traj_[0].evaluateDeBoorT(t_cur);
     vel = traj_[1].evaluateDeBoorT(t_cur);
     acc = traj_[2].evaluateDeBoorT(t_cur);
@@ -185,9 +166,7 @@ void cmdCallback(const ros::TimerEvent &e)
 
     double tf = min(traj_duration_, t_cur + 2.0);
     pos_f = traj_[0].evaluateDeBoorT(tf);
-  }
-  else if (t_cur >= traj_duration_)
-  {
+  } else if (t_cur >= traj_duration_) {
     /* hover when finish traj_ */
     pos = traj_[0].evaluateDeBoorT(traj_duration_);
     vel.setZero();
@@ -197,16 +176,15 @@ void cmdCallback(const ros::TimerEvent &e)
     yaw_yawdot.second = 0;
 
     pos_f = pos;
-  }
-  else
-  {
+  } else {
     cout << "[Traj server]: invalid time." << endl;
   }
   time_last = time_now;
 
   cmd.header.stamp = time_now;
   cmd.header.frame_id = "world";
-  cmd.trajectory_flag = quadrotor_msgs::PositionCommand::TRAJECTORY_STATUS_READY;
+  cmd.trajectory_flag =
+      quadrotor_msgs::PositionCommand::TRAJECTORY_STATUS_READY;
   cmd.trajectory_id = traj_id_;
 
   cmd.position.x = pos(0);
@@ -229,15 +207,16 @@ void cmdCallback(const ros::TimerEvent &e)
   pos_cmd_pub.publish(cmd);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   ros::init(argc, argv, "traj_server");
   // ros::NodeHandle node;
   ros::NodeHandle nh("~");
 
-  ros::Subscriber bspline_sub = nh.subscribe("planning/bspline", 10, bsplineCallback);
+  ros::Subscriber bspline_sub =
+      nh.subscribe("planning/bspline", 10, bsplineCallback);
 
-  pos_cmd_pub = nh.advertise<quadrotor_msgs::PositionCommand>("/position_cmd", 50);
+  pos_cmd_pub =
+      nh.advertise<quadrotor_msgs::PositionCommand>("/position_cmd", 50);
 
   ros::Timer cmd_timer = nh.createTimer(ros::Duration(0.01), cmdCallback);
 

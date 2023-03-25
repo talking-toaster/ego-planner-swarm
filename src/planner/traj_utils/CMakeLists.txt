@@ -1,9 +1,16 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(traj_utils)
 
-set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_CXX_FLAGS "-std=c++11")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -g")
+
+#release
+# set(CMAKE_BUILD_TYPE "Release")
+#set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -g")
+
+#debug
+set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_CXX_FLAGS_RELEASE "-O0 -Wall -g")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON) 
 
 find_package(catkin REQUIRED COMPONENTS
   #bspline_opt

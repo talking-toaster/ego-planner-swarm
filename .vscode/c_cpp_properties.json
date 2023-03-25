@@ -1,26 +1,24 @@
 {
-  "configurations": [
-      {
-          //"name": "Linux",
-          "browse": {
-            "databaseFilename": "${default}",
-            "limitSymbolsToIncludedHeaders": false
-          },
-          "includePath": [
-              "${workspaceFolder}/**",
-              "/opt/ros/noetic/include/**",
-              "/usr/include/**"
-          ],
-          "defines": [],
-          "compilerPath": "/usr/bin/gcc",
-          "cStandard": "c11",
-          "cppStandard": "c++17",
-          "name": "ROS",
-          "intelliSenseMode": "gcc-x64",
-          "compileCommands": "${workspaceFolder}/build/compile_commands.json"
-      }
-  ],
-
-  "version": 4
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "${default}",
+                "limitSymbolsToIncludedHeaders": false
+            },
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/ros/noetic/include/**",
+                "/usr/include/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "name": "ROS",
+            "intelliSenseMode": "gcc-x64",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
 }
-
