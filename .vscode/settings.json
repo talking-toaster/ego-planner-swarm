@@ -1,0 +1,18 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/xue/Desktop/ego-planner-swarm/devel/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ],
+    "files.exclude": {
+        //"devel":true,
+        //"build":true,
+        "pictures": true,
+        ".catkin_workspace": true,
+        ".vscode.zip": true,
+        "LICENSE": true
+    },
+    "editor.formatOnSave": true,
+    "python.analysis.extraPaths": [
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ]
+}

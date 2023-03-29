@@ -1,0 +1,19 @@
+---
+# 从 https://clang-format-configurator.site/ 配置，当前vscode 的clang-format版本为14.0，此配置文件以10.0版本生成
+BasedOnStyle: LLVM
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignConsecutiveMacros: true
+AllowShortFunctionsOnASingleLine: None
+# 连续空行的最大数量
+MaxEmptyLinesToKeep: 3
+BraceWrapping:
+    AfterClass: true
+ColumnLimit: 120
+SortIncludes: false
+IndentWidth: 4
+TabWidth: 4
+UseTab: Always
+AlwaysBreakTemplateDeclarations: Yes
+#case标签缩进
+IndentCaseLabels: true
